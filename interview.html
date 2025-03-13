@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Your Interview - Path2Hire</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar__container">
+            <a href="/" id="navbar__logo">Path2Hire</a>
+            <div class="navbar__btn">
+                <a href="profile.html" class="login-btn">Profile</a>
+                <a href="/" class="signup-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="interview-setup">
+            <div class="interview-container">
+                <h1>Ready for your interview?</h1>
+                <p class="setup-description">Choose your interview type and start practicing</p>
+                
+                <div class="interview-options">
+                    <div class="interview-type">
+                        <h3>Technical Interview</h3>
+                        <p>Practice coding and technical concepts</p>
+                        <button class="main__btn" onclick="startInterview('technical')">Start</button>
+                    </div>
+                    
+                    <div class="interview-type">
+                        <h3>Behavioral Interview</h3>
+                        <p>Practice soft skills and situational questions</p>
+                        <button class="main__btn" onclick="startInterview('behavioral')">Start</button>
+                    </div>
+                    
+                    <div class="interview-type">
+                        <h3>General Interview</h3>
+                        <p>Mix of technical and behavioral questions</p>
+                        <button class="main__btn" onclick="startInterview('general')">Start</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function startInterview(type) {
+            // Store interview type in session storage
+            sessionStorage.setItem('interviewType', type);
+            // Redirect to the interview room
+            window.location.href = 'interview-room.html';
+        }
+    </script>
+</body>
+</html> 

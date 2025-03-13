@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Room - Path2Hire</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar__container">
+            <a href="/" id="navbar__logo">Path2Hire</a>
+            <div class="navbar__btn">
+                <a href="/" class="signup-btn">End Interview</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="interview-room">
+            <div class="interview-container">
+                <!-- Preparation Phase -->
+                <div id="prepPhase" class="interview-phase">
+                    <h2>Prepare for Your Question</h2>
+                    <div class="prep-info">
+                        <p class="prep-note">You have 1 minute to prepare, or you can skip when ready</p>
+                        <div id="prepTimer" class="timer">01:00</div>
+                    </div>
+                    <p class="current-question">Take a moment to gather your thoughts...</p>
+                    <button id="skipPrep" class="main__btn">Start Now →</button>
+                    <p class="skip-hint">Click 'Start Now' to skip preparation time</p>
+                </div>
+
+                <!-- Answer Phase -->
+                <div id="answerPhase" class="interview-phase" style="display: none;">
+                    <div class="question-section">
+                        <h2>Current Question</h2>
+                        <div id="answerTimer" class="timer">02:00</div>
+                        <div id="currentQuestion" class="current-question">
+                            Loading question...
+                        </div>
+                    </div>
+
+                    <div class="video-section">
+                        <div class="video-container">
+                            <video id="videoElement" autoplay playsinline></video>
+                        </div>
+                        <div class="controls">
+                            <button id="skipQuestion" class="secondary-btn">Skip Question</button>
+                            <button id="nextQuestion" class="main__btn">Next Question</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let stream;
+        let prepTimeLeft = 60; // 1 minute
+        let answerTimeLeft = 120; // 2 minutes
+        let prepTimerInterval;
+        let answerTimerInterval;
+        
+        // Sample questions (replace with your actual questions)
+        const questions = [
+            "Tell me about yourself and your experience.",
+            "What are your greatest strengths?",
+            "Why do you want to work for our company?",
+            "Where do you see yourself in 5 years?",
+            "Describe a challenging situation at work and how you handled it."
+        ];
+        let currentQuestionIndex = 0;
+
+        // Initialize camera and microphone
+        async function initializeMedia() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+                const videoElement = document.getElementById('videoElement');
+                videoElement.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing media devices:', err);
+                alert('Please enable camera and microphone access to continue.');
+            }
+        }
+
+        // Timer functions
+        function updatePrepTimer() {
+            const minutes = Math.floor(prepTimeLeft / 60);
+            const seconds = prepTimeLeft % 60;
+            document.getElementById('prepTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (prepTimeLeft === 0) {
+                clearInterval(prepTimerInterval);
+                startAnswerPhase();
+            }
+            prepTimeLeft--;
+        }
+
+        function updateAnswerTimer() {
+            const minutes = Math.floor(answerTimeLeft / 60);
+            const seconds = answerTimeLeft % 60;
+            document.getElementById('answerTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (answerTimeLeft === 0) {
+                clearInterval(answerTimerInterval);
+                moveToNextQuestion();
+            }
+            answerTimeLeft--;
+        }
+
+        function startAnswerPhase() {
+            document.getElementById('prepPhase').style.display = 'none';
+            document.getElementById('answerPhase').style.display = 'block';
+            document.getElementById('currentQuestion').textContent = questions[currentQuestionIndex];
+            
+            // Start answer timer
+            answerTimeLeft = 120;
+            answerTimerInterval = setInterval(updateAnswerTimer, 1000);
+            
+            // Initialize camera if not already done
+            if (!stream) {
+                initializeMedia();
+            }
+        }
+
+        function moveToNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= questions.length) {
+                // End of interview
+                window.location.href = 'feedback.html';
+                return;
+            }
+
+            // Reset timers
+            clearInterval(answerTimerInterval);
+            prepTimeLeft = 60;
+            document.getElementById('prepPhase').style.display = 'block';
+            document.getElementById('answerPhase').style.display = 'none';
+            prepTimerInterval = setInterval(updatePrepTimer, 1000);
+        }
+
+        // Event Listeners
+        document.getElementById('skipPrep').addEventListener('click', () => {
+            clearInterval(prepTimerInterval);
+            startAnswerPhase();
+        });
+
+        document.getElementById('skipQuestion').addEventListener('click', moveToNextQuestion);
+        document.getElementById('nextQuestion').addEventListener('click', moveToNextQuestion);
+
+        // Start the interview
+        prepTimerInterval = setInterval(updatePrepTimer, 1000);
+    </script>
+</body>
+</html> 

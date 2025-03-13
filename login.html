@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Path2Hire - Sign In</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar__container">
+            <a href="/" id="navbar__logo">Path2Hire</a>
+            <div class="navbar__btn">
+                <a href="login.html" class="login-btn">Log In</a>
+                <a href="signup.html" class="signup-btn">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="auth-container">
+            <div id="signin-form" class="auth-form">
+                <h2>Log In</h2>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button class="login-btn" onclick="handleSignIn()">Log In</button>
+                <p class="auth-toggle">Don't have an account? <a href="signup.html">Sign Up</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function handleSignIn() {
+            // Add sign in logic here
+            window.location.href = 'setup.html';
+        }
+    </script>
+</body>
+</html> 

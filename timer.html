@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Path2Hire - Interview Question</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar__container">
+            <a href="/" id="navbar__logo">Path2Hire</a>
+        </div>
+    </nav>
+
+    <div class="timer-container">
+        <div id="pre-start" class="question-container">
+            <h2>Ready to Start Your Interview?</h2>
+            <p>Once you click the button below, you'll have 1 minute to read and understand the question.</p>
+            <button class="reveal-btn" onclick="revealQuestion()">I'm Ready</button>
+        </div>
+
+        <div id="question-section" class="question-container" style="display: none;">
+            <h2>Your Interview Question</h2>
+            <div class="timer" id="timer">01:00</div>
+            <div class="question-revealed">
+                <h3>Question:</h3>
+                <p id="question-text">Loading question...</p>
+            </div>
+        </div>
+
+        <div id="answer-section" class="question-container" style="display: none;">
+            <h2>Provide Your Answer</h2>
+            <form class="answer-form" onsubmit="submitAnswer(event)">
+                <textarea id="answer" placeholder="Type your answer here..." required></textarea>
+                <button type="submit" class="button">Submit Answer</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        const major = sessionStorage.getItem('major');
+        const level = sessionStorage.getItem('level');
+
+        const questions = {
+            cs: {
+                junior: "Can you explain the difference between var, let, and const in JavaScript?",
+                mid: "Explain the concept of dependency injection and its benefits.",
+                senior: "Design a scalable microservices architecture for an e-commerce platform."
+            },
+            engineering: {
+                junior: "What are the fundamental principles of object-oriented programming?",
+                mid: "Explain how you would optimize a slow-performing application.",
+                senior: "Describe a complex technical challenge you've faced and how you solved it."
+            },
+            business: {
+                junior: "Explain the concept of market segmentation.",
+                mid: "How would you develop a strategic business plan for a startup?",
+                senior: "Analyze the impact of digital transformation on traditional business models."
+            }
+        };
+
+        function revealQuestion() {
+            document.getElementById('pre-start').style.display = 'none';
+            document.getElementById('question-section').style.display = 'block';
+            
+            const questionText = questions[major]?.[level] || "Tell us about your background and experience.";
+            document.getElementById('question-text').textContent = questionText;
+            
+            startTimer(60, document.getElementById('timer'));
+        }
+
+        function startTimer(duration, display) {
+            let timer = duration;
+            timerInterval = setInterval(function () {
+                const minutes = parseInt(timer / 60, 10);
+                const seconds = parseInt(timer % 60, 10);
+
+                display.textContent = minutes.toString().padStart(2, '0') + ':' + 
+                                    seconds.toString().padStart(2, '0');
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    showAnswerSection();
+                }
+            }, 1000);
+        }
+
+        function showAnswerSection() {
+            document.getElementById('question-section').style.display = 'none';
+            document.getElementById('answer-section').style.display = 'block';
+        }
+
+        function submitAnswer(event) {
+            event.preventDefault();
+            const answer = document.getElementById('answer').value;
+            sessionStorage.setItem('userAnswer', answer);
+            window.location.href = 'feedback.html';
+        }
+    </script>
+</body>
+</html> 

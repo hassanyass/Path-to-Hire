@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Path2Hire - Interview Setup</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar__container">
+            <a href="/" id="navbar__logo">Path2Hire</a>
+        </div>
+    </nav>
+
+    <div class="setup-container">
+        <h2>Setup Your Interview</h2>
+        <form class="setup-form" onsubmit="startInterview(event)">
+            <div class="select-group">
+                <label for="major">Select Your Major</label>
+                <select id="major" required>
+                    <option value="">Choose your major</option>
+                    <option value="cs">Computer Science</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="business">Business</option>
+                    <option value="design">Design</option>
+                    <option value="marketing">Marketing</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <label for="level">Experience Level</label>
+                <select id="level" required>
+                    <option value="">Choose your level</option>
+                    <option value="junior">Junior (0-2 years)</option>
+                    <option value="mid">Mid-Level (3-5 years)</option>
+                    <option value="senior">Senior (5+ years)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="button">Start Interview Preparation</button>
+        </form>
+    </div>
+
+    <script>
+        function startInterview(event) {
+            event.preventDefault();
+            const major = document.getElementById('major').value;
+            const level = document.getElementById('level').value;
+            
+            // Store selections in sessionStorage for use in the interview
+            sessionStorage.setItem('major', major);
+            sessionStorage.setItem('level', level);
+            
+            // Redirect to the timer page
+            window.location.href = 'timer.html';
+        }
+    </script>
+</body>
+</html> 
