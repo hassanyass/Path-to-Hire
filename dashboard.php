@@ -3,16 +3,14 @@
 session_start();
 include 'conn.php';
 
-// Redirect if the user is not logged in
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit();
 }
 
 $userId = $_SESSION['user']['user_id'];
-$username = $_SESSION['user']['user_name'] ?? 'User'; // Default to 'User' if username is not set
+$username = $_SESSION['user']['user_name'] ?? 'User';
 
-// Fetch the user's interview sessions
 $interviewQuery = mysqli_query($conn, "
     SELECT interview_num, major_name, level_name, field, created_at
     FROM interview_responses
@@ -38,11 +36,10 @@ while ($row = mysqli_fetch_assoc($interviewQuery)) {
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for the dashboard */
         .interview-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns per row */
-            gap: 20px; /* Space between cards */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             margin-top: 20px;
         }
 
@@ -85,16 +82,15 @@ while ($row = mysqli_fetch_assoc($interviewQuery)) {
             background: var(--secondary);
         }
 
-        /* Responsive styles */
         @media (max-width: 768px) {
             .interview-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 columns per row on smaller screens */
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (max-width: 480px) {
             .interview-grid {
-                grid-template-columns: 1fr; /* 1 column per row on mobile */
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -115,7 +111,7 @@ while ($row = mysqli_fetch_assoc($interviewQuery)) {
                 </li>
             </ul>
             <div class="navbar__btn">
-                <a href="logout.php" class="login-btn">Logout</a> <!-- Add a logout link -->
+                <a href="logout.php" class="login-btn">Logout</a>
                 <a href="setup.php" class="signup-btn">New Interview</a>
             </div>
         </div>

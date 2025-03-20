@@ -9,21 +9,19 @@
 
     $userId = $_SESSION['user']['user_id'];
     
-    // Fetch current user's major_id, level_id, and field
     $query = mysqli_query($conn, "SELECT major_id, level_id, field FROM users WHERE user_id = '$userId'");
     $userData = mysqli_fetch_assoc($query);
     $userMajor = $userData['major_id'] ?? null;
     $userLevel = $userData['level_id'] ?? null;
     $userField = $userData['field'] ?? null;
 
-    $showPopup = false; // Flag to control popup display
+    $showPopup = false;
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $major = mysqli_real_escape_string($conn, $_POST['major']);
         $level = mysqli_real_escape_string($conn, $_POST['level']);
         $field = mysqli_real_escape_string($conn, $_POST['field']);
 
-        // Fetch major_name based on major_id
         $majorQuery = mysqli_query($conn, "SELECT major_name FROM major WHERE major_id = '$major'");
         if (!$majorQuery) {
             die("Database query failed: " . mysqli_error($conn));
@@ -32,29 +30,24 @@
         $majorName = $majorData['major_name'];
 
         if ($userMajor === null || $userLevel === null) {
-            // First-time selection
             mysqli_query($conn, "UPDATE users SET major_id = '$major', level_id = '$level', field = '$field' WHERE user_id = '$userId'");
         } elseif ($userMajor !== $major || $userLevel !== $level || $userField !== $field) {
-            // Update only if the selection is different
             mysqli_query($conn, "UPDATE users SET major_id = '$major', level_id = '$level', field = '$field' WHERE user_id = '$userId'");
         }
         
-        // Update session data
         $_SESSION['user']['major_id'] = $major;
         $_SESSION['user']['level_id'] = $level;
         $_SESSION['user']['field'] = $field;
 
-        // Prepare data for OpenAI API
         $apiData = [
-            'jobRole' => $majorName, // Use major_name instead of major_id
+            'jobRole' => $majorName,
             'industry' => $field,
             'numQuestions' => 10,
-            'level_id' => $userLevel, // Pass level_id to the API
+            'level_id' => $userLevel,
             'topic' => $majorName . ' ' . $field
         ];
         $apiDataJson = json_encode($apiData);
 
-        // Send data to OpenAI API
         $ch = curl_init('http://localhost:5000/generate_questions');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -67,8 +60,8 @@
 
         if ($response) {
             $questions = json_decode($response, true)['questions'];
-            $_SESSION['questions'] = $questions; // Store questions in session
-            $showPopup = true; // Show popup to start interview
+            $_SESSION['questions'] = $questions;
+            $showPopup = true;
         }
     }
 ?>
@@ -81,7 +74,6 @@
     <title>Path2Hire - Interview Setup</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Background overlay */
         #pre-start-overlay {
             position: fixed;
             top: 0;
@@ -93,7 +85,6 @@
             z-index: 999;
         }
 
-        /* Popup container */
         #pre-start {
             position: fixed;
             top: 50%;
@@ -109,7 +100,6 @@
             border-top: 4px solid var(--secondary);
         }
 
-        /* Center text */
         #pre-start h2 {
             font-size: 2.5rem;
             margin-bottom: 2rem;
@@ -118,7 +108,6 @@
             font-weight: 900;
         }
 
-        /* Button */
         #pre-start .reveal-btn {
             display: block;
             margin: 20px auto;
@@ -192,13 +181,11 @@
     </div>
 
     <script>
-        // Show popup if flag is set
         <?php if ($showPopup): ?>
             document.getElementById('pre-start-overlay').style.display = 'block';
             document.getElementById('pre-start').style.display = 'block';
         <?php endif; ?>
 
-        // Redirect to interview room
         document.getElementById('ready-btn').addEventListener('click', function() {
             window.location.href = 'interview-room.php';
         });

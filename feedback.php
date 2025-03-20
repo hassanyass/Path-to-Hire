@@ -1,15 +1,11 @@
 <?php
-// feedback.php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Start the session
 session_start();
 
-// Include the database connection file
 include 'conn.php';
 
-// Redirect if the user is not logged in
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit();
@@ -17,7 +13,6 @@ if (!isset($_SESSION['user'])) {
 
 $userId = $_SESSION['user']['user_id'];
 
-// Fetch user data including major, level, and field
 $userQuery = mysqli_query($conn, "
     SELECT u.field, m.major_name, l.level_name
     FROM users u
@@ -30,7 +25,6 @@ $major = $userData['major_name'];
 $level = $userData['level_name'];
 $field = $userData['field'];
 
-// Get the latest interview session ID for the current user
 $interviewNumQuery = mysqli_query($conn, "
     SELECT MAX(interview_num) AS latest_interview_num
     FROM interview_responses
@@ -39,7 +33,6 @@ $interviewNumQuery = mysqli_query($conn, "
 $interviewNumData = mysqli_fetch_assoc($interviewNumQuery);
 $interviewNum = $interviewNumData['latest_interview_num'];
 
-// Fetch questions and answers for the latest interview session
 $qaQuery = mysqli_query($conn, "
     SELECT question, answer
     FROM interview_responses
@@ -53,7 +46,6 @@ while ($row = mysqli_fetch_assoc($qaQuery)) {
     ];
 }
 
-// Prepare data for the Python API
 $data = [
     'major' => $major,
     'level' => $level,
@@ -62,7 +54,6 @@ $data = [
 ];
 $jsonData = json_encode($data);
 
-// Send data to the Python API for feedback generation
 $pythonApiUrl = "http://localhost:5000/feedback";
 $feedback = null;
 
@@ -74,7 +65,7 @@ if (!empty($qaPairs)) {
     ]);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Set a timeout of 30 seconds
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -133,7 +124,6 @@ if (!empty($qaPairs)) {
                 <?php endif; ?>
             </div>
 
-            <!-- Question-Specific Feedback -->
             <div class="feedback__questions">
                 <h2>Question-Specific Feedback</h2>
                 <?php if ($feedback && isset($feedback['question_feedback'])): ?>
@@ -150,7 +140,6 @@ if (!empty($qaPairs)) {
                 <?php endif; ?>
             </div>
 
-            <!-- Action Buttons -->
             <div class="feedback__actions">
                 <a href="setup.php" class="main__btn">Practice Again</a>
                 <a href="dashboard.php" class="login-btn">Back to Dashboard</a>

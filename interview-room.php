@@ -12,7 +12,6 @@ if (!isset($_SESSION['user'])) {
 
 $userId = $_SESSION['user']['user_id'];
 
-// Fetch user data including major, level, and field
 $query = mysqli_query($conn, "
     SELECT u.field, m.major_name, m.major_id, l.level_id 
     FROM users u
@@ -25,7 +24,7 @@ if (!$query) {
 }
 $userData = mysqli_fetch_assoc($query);
 
-$majorName = $userData['major_name']; // Use major_name instead of major_id
+$majorName = $userData['major_name'];
 $majorId = $userData['major_id'];
 $levelId = $userData['level_id'];
 $field = $userData['field'];
@@ -117,29 +116,26 @@ $questions = $_SESSION['questions'] ?? [];
         let mediaRecorder;
         let recordedChunks = [];
         let interviewNum = <?php echo $interviewNum; ?>;
-        let recognition; // Speech recognition object
-        let userAnswerText = ''; // Store the transcribed answer
-        let isQuestionSpoken = false; // Track if the question has been spoken
+        let recognition;
+        let userAnswerText = '';
+        let isQuestionSpoken = false;
 
-        // Initialize speech recognition when the page loads
         function initializeSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
-            recognition.continuous = true; // Keep listening until stopped
-            recognition.interimResults = true; // Get interim results
-            recognition.lang = 'en-US'; // Set language
-
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
             recognition.onresult = (event) => {
                 let interimTranscript = '';
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
-                        userAnswerText += transcript + ' '; // Append final transcript
+                        userAnswerText += transcript + ' ';
                     } else {
-                        interimTranscript += transcript; // Append interim transcript
+                        interimTranscript += transcript;
                     }
                 }
-                // Display the transcribed text in real-time
                 document.getElementById('userAnswerText').textContent = userAnswerText + interimTranscript;
             };
 
@@ -148,18 +144,15 @@ $questions = $_SESSION['questions'] ?? [];
             };
         }
 
-        // Start speech recognition
         function startSpeechRecognition() {
-            userAnswerText = ''; // Reset the answer text
+            userAnswerText = '';
             recognition.start();
         }
 
-        // Stop speech recognition
         function stopSpeechRecognition() {
             recognition.stop();
         }
 
-        // Save the transcribed answer to the database
         async function saveResponse() {
             const question = questions[currentQuestionIndex];
             const qNumber = currentQuestionIndex + 1;
@@ -174,11 +167,11 @@ $questions = $_SESSION['questions'] ?? [];
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    q_id: qNumber, // Use question number as q_id
+                    q_id: qNumber,
                     q_number: qNumber,
                     user_id: userId,
                     question: question,
-                    answer: userAnswerText, // Save the transcribed text
+                    answer: userAnswerText,
                     interview_num: interviewNum,
                     major_id: majorId,
                     level_id: levelId,
@@ -193,9 +186,7 @@ $questions = $_SESSION['questions'] ?? [];
             return true;
         }
 
-        // Move to the next question
         async function moveToNextQuestion() {
-            // Save the current question and answer before moving to the next question
             const isSaved = await saveResponse();
             if (!isSaved) {
                 alert('Failed to save the response. Please try again.');
@@ -208,19 +199,15 @@ $questions = $_SESSION['questions'] ?? [];
                 return;
             }
 
-            // Reset the answer timer for the new question
             resetAnswerTimer();
 
-            // Display the new question
             document.getElementById('currentQuestion').textContent = questions[currentQuestionIndex];
             speakQuestion(questions[currentQuestionIndex]);
 
-            // Reset the answer text for the new question
             userAnswerText = '';
             document.getElementById('userAnswerText').textContent = '';
         }
 
-        // Start recording and speech recognition
         async function startRecording() {
             recordedChunks = [];
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -233,28 +220,25 @@ $questions = $_SESSION['questions'] ?? [];
             mediaRecorder.start();
             document.getElementById('startRecord').disabled = true;
             document.getElementById('stopRecord').disabled = false;
-            startSpeechRecognition(); // Start speech recognition
+            startSpeechRecognition();
         }
 
-        // Stop recording and speech recognition
         function stopRecording() {
             mediaRecorder.stop();
             document.getElementById('startRecord').disabled = false;
             document.getElementById('stopRecord').disabled = true;
-            stopSpeechRecognition(); // Stop speech recognition
+            stopSpeechRecognition();
 
             mediaRecorder.onstop = async () => {
                 const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
                 const reader = new FileReader();
                 reader.readAsDataURL(audioBlob);
                 reader.onloadend = () => {
-                    const base64Audio = reader.result.split(',')[1]; // Extract base64 data
-                    // Optionally save the audio file as well
+                    const base64Audio = reader.result.split(',')[1];
                 };
             };
         }
 
-        // Start the preparation timer
         function startPrepTimer() {
             prepTimerInterval = setInterval(() => {
                 prepTimeLeft--;
@@ -270,7 +254,6 @@ $questions = $_SESSION['questions'] ?? [];
             }, 1000);
         }
 
-        // Start the answer timer
         function startAnswerTimer() {
             answerTimerInterval = setInterval(() => {
                 answerTimeLeft--;
@@ -286,43 +269,39 @@ $questions = $_SESSION['questions'] ?? [];
             }, 1000);
         }
 
-        // Reset the answer timer
         function resetAnswerTimer() {
-            answerTimeLeft = 120; // Reset to 2 minutes
-            clearInterval(answerTimerInterval); // Clear any existing interval
+            answerTimeLeft = 120
+            clearInterval(answerTimerInterval);
         }
 
-        // Speak the question aloud
         function speakQuestion(question) {
             if (speechSynth.speaking) {
-                speechSynth.cancel(); // Stop any ongoing speech
+                speechSynth.cancel();
             }
 
-            // Find a male voice (if available)
             const voices = speechSynth.getVoices();
             const maleVoice = voices.find(voice => voice.name.includes('Male') || voice.lang === 'en-US');
 
             const utterance = new SpeechSynthesisUtterance(question);
             if (maleVoice) {
-                utterance.voice = maleVoice; // Use the male voice
+                utterance.voice = maleVoice;
             }
-            utterance.pitch = 1; // Adjust pitch (0 to 2)
-            utterance.rate = 1; // Adjust speed (0.1 to 10)
-            utterance.volume = 1; // Adjust volume (0 to 1)
+            utterance.pitch = 1;
+            utterance.rate = 1;
+            utterance.volume = 1;
 
             utterance.onend = () => {
                 isQuestionSpoken = true;
-                startAnswerTimer(); // Start the timer after the question is read
+                startAnswerTimer();
             };
             utterance.onerror = (event) => {
                 console.error("Speech synthesis error:", event.error);
                 isQuestionSpoken = true;
-                startAnswerTimer(); // Start the timer even if speech fails
+                startAnswerTimer();
             };
             speechSynth.speak(utterance);
         }
 
-        // Start the answer phase
         function startAnswerPhase() {
             document.getElementById('prepPhase').style.display = 'none';
             document.getElementById('answerPhase').style.display = 'block';
@@ -332,19 +311,16 @@ $questions = $_SESSION['questions'] ?? [];
             }
         }
 
-        // End the interview and redirect to feedback page
         function endInterview() {
             clearInterval(answerTimerInterval);
             if (speechSynth.speaking) {
-                speechSynth.cancel(); // Stop speech if the interview ends
+                speechSynth.cancel();
             }
-            window.location.href = 'feedback.php'; // Redirect to feedback page
+            window.location.href = 'feedback.php';
         }
 
-        // Initialize speech recognition when the page loads
         initializeSpeechRecognition();
 
-        // Event listeners
         document.getElementById('skipPrep').addEventListener('click', () => {
             clearInterval(prepTimerInterval);
             startAnswerPhase();
@@ -355,7 +331,6 @@ $questions = $_SESSION['questions'] ?? [];
         document.getElementById('startRecord').addEventListener('click', startRecording);
         document.getElementById('stopRecord').addEventListener('click', stopRecording);
 
-        // Start the preparation timer and fetch questions when the page loads
         startPrepTimer();
     </script>
 </body>

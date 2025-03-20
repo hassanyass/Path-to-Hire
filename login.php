@@ -1,21 +1,20 @@
 <?php
-session_start(); // Start the session
-include 'conn.php'; // Include your database connection file
+session_start();
+include 'conn.php';
 
-$message = []; // Initialize an empty message array
+$message = [];
 
 if (isset($_POST['submit'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = mysqli_real_escape_string($conn, md5($_POST['password'])); // Hash the password
+    $password = mysqli_real_escape_string($conn, md5($_POST['password']));
 
-    // Check if the user exists
     $select = mysqli_query($conn, "SELECT * FROM `users` WHERE user_email = '$email' AND password = '$password'") 
     or die('Query failed');
 
     if (mysqli_num_rows($select) > 0) {
-        $user = mysqli_fetch_assoc($select); // Fetch user data
-        $_SESSION['user'] = $user; // Store user data in the session
-        header('Location: index.php'); // Redirect to the home page
+        $user = mysqli_fetch_assoc($select);
+        $_SESSION['user'] = $user;
+        header('Location: index.php');
         exit();
     } else {
         $message[] = 'Incorrect email or password!';
@@ -47,7 +46,6 @@ if (isset($_POST['submit'])) {
             <form class="auth-form" method="post" action="">
                 <h2>Log In</h2>
 
-                <!-- Display error/success messages -->
                 <?php
                     if (isset($message)) {
                         foreach ($message as $msg) {
@@ -74,7 +72,6 @@ if (isset($_POST['submit'])) {
     </main>
 
     <script>
-        // Optional: Add JavaScript for client-side validation or enhancements
         function validateForm() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;

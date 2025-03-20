@@ -1,16 +1,15 @@
 <?php
-session_start(); // Start the session
-include 'conn.php'; // Include your database connection file
+session_start();
+include 'conn.php';
 
-$message = []; // Initialize an empty message array
+$message = [];
 
 if (isset($_POST['submit'])) {
     $fullName = mysqli_real_escape_string($conn, $_POST['fullName']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = mysqli_real_escape_string($conn, md5($_POST['password'])); // Hash the password
-    $confirmPassword = mysqli_real_escape_string($conn, md5($_POST['confirmPassword'])); // Hash the confirm password
+    $password = mysqli_real_escape_string($conn, md5($_POST['password']));
+    $confirmPassword = mysqli_real_escape_string($conn, md5($_POST['confirmPassword']));
 
-    // Check if the user already exists
     $select = mysqli_query($conn, "SELECT * FROM `users` WHERE user_name = '$fullName' OR user_email = '$email'") 
     or die('Query failed');
 
@@ -20,21 +19,19 @@ if (isset($_POST['submit'])) {
         if ($password != $confirmPassword) {
             $message[] = 'Confirm password does not match!';
         } else {
-            // Insert the new user into the database
             $insert = mysqli_query($conn, "INSERT INTO `users` (user_name, user_email, password) 
             VALUES ('$fullName', '$email', '$password')") 
             or die('Query failed');
 
             if ($insert) {
-                // Automatically log the user in after successful registration
                 $selectUser = mysqli_query($conn, "SELECT * FROM `users` WHERE user_email = '$email' AND password = '$password'") 
                 or die('Query failed');
 
                 if (mysqli_num_rows($selectUser) > 0) {
-                    $user = mysqli_fetch_assoc($selectUser); // Fetch user data
-                    $_SESSION['user'] = $user; // Store user data in the session
+                    $user = mysqli_fetch_assoc($selectUser);
+                    $_SESSION['user'] = $user;
                     $message[] = 'Registered successfully!';
-                    header('Location: index.php'); // Redirect to index.php
+                    header('Location: index.php');
                     exit();
                 }
             } else {
@@ -67,7 +64,6 @@ if (isset($_POST['submit'])) {
     <main>
         <div class="auth-container">
             <form class="auth-form" id="signupForm" method="post" action="">
-                <!-- Display error/success messages -->
                 <?php
                     if (isset($message)) {
                         foreach ($message as $msg) {
@@ -125,28 +121,24 @@ if (isset($_POST['submit'])) {
         const letterCheck = document.getElementById('letter-check');
         const numberCheck = document.getElementById('number-check');
 
-        // Real-time password validation
         password.addEventListener('input', validatePassword);
         confirmPassword.addEventListener('input', checkPasswordMatch);
 
         function validatePassword() {
             const value = password.value;
             
-            // Check length
             if (value.length >= 8 && value.length <= 64) {
                 lengthCheck.style.color = 'var(--secondary)';
             } else {
                 lengthCheck.style.color = 'var(--gray-600)';
             }
             
-            // Check for letters
             if (/[A-Za-z]/.test(value)) {
                 letterCheck.style.color = 'var(--secondary)';
             } else {
                 letterCheck.style.color = 'var(--gray-600)';
             }
             
-            // Check for numbers
             if (/\d/.test(value)) {
                 numberCheck.style.color = 'var(--secondary)';
             } else {
