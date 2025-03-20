@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# Initialize the OpenAI client
+
 client = OpenAI(api_key="")  # Replace with your OpenAI API key
 
 def generate_feedback_prompt(major, level, field, qa_pairs):
@@ -59,7 +59,7 @@ def generate_feedback():
         field = data['field']
         qa_pairs = data['qa_pairs']
 
-        # Generate the prompt for the AI model
+        
         prompt = f"""You are an expert interview coach specializing in {major} for {level} candidates in the {field} field. 
 Provide detailed feedback on the following interview responses:
 
@@ -94,7 +94,7 @@ Here are the questions and answers:
   ]
 }"""
 
-        # Send the prompt to OpenAI's GPT-3.5-turbo
+        
         try:
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",  # Use GPT-3.5-turbo
@@ -106,15 +106,15 @@ Here are the questions and answers:
             )
             feedback = response.choices[0].message.content.strip()
 
-            # Remove any extra characters like ```json
+           
             if feedback.startswith("```json"):
-                feedback = feedback[7:]  # Remove ```json
+                feedback = feedback[7:]  
             if feedback.endswith("```"):
-                feedback = feedback[:-3]  # Remove ```
+                feedback = feedback[:-3] 
 
             print("Raw feedback from OpenAI:", feedback)
 
-            # Parse the AI response
+            
             feedback_json = json.loads(feedback)
             print("Parsed feedback JSON:", feedback_json)
             return jsonify(feedback_json)
