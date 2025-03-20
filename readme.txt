@@ -1,5 +1,10 @@
 # Path to Hire - Setup Guide
-
+The opern ai api key : 
+sk-proj-lNJfUd-fW51HhaMrgwgqUth9jp59rxRKFaZuia
+RQybRYPm83Tm3VRsuAViL7DofzFLwx74fd81T3BlbkFJtC
+7R-cEZ5vCQ7H87GmbygGHs6M-vwO42-u14VEoJcXvfcODM
+82cRlkHT7jtmzBxXmTMF9dD1EApleaseremovethissent
+ecnceafter
 ## Prerequisites
 Before setting up the project, ensure you have the following installed on your system:
 - [XAMPP](https://www.apachefriends.org/index.html)
