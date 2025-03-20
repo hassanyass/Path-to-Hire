@@ -7,7 +7,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize OpenAI client
-client = OpenAI(api_key="")  # Replace with your OpenAI API key
+client = OpenAI(api_key="")  #Please refer to the readme file
+
 
 # Endpoint to generate questions
 @app.route("/generate_questions", methods=["POST"])
